@@ -1,0 +1,10 @@
+[package]
+name = 'fidmag_rs'
+version = '0.1.0'
+authors = ['Alex Komissarov <k.a.komissar@gmail.com>']
+edition = '2018'
+
+[dependencies]
+ndarray = '0.13'
+ndarray-linalg = '0.12'
+openblas-src = '0.7'
