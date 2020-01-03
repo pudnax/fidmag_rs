@@ -7,5 +7,10 @@ edition = '2018'
 [dependencies]
 ndarray = '0.13'
 ndarray-linalg = '0.12'
-rustfft = '3.0.0'
+rustfft = '3.0.1'
 plotters = '0.2.12'
+
+[dev-dependencies]
+criterion = '0.3'
+[profile.release]
+opt-level = 3

@@ -4,3 +4,4 @@ fidmag.py
 examples
 *.png
 fi.py
+callgrind*
