@@ -1,4 +1,3 @@
-#![allow(dead_code)]
 extern crate ndarray;
 extern crate rustfft;
 
@@ -7,7 +6,11 @@ use rustfft::num_complex::Complex;
 use rustfft::num_traits::Zero;
 use rustfft::{FFTnum, FFTplanner};
 
-fn _fft<T: FFTnum>(input: &mut [Complex<T>], output: &mut [Complex<T>], inverse: bool) {
+fn fast_fourier_transform_planner<T: FFTnum>(
+    input: &mut [Complex<T>],
+    output: &mut [Complex<T>],
+    inverse: bool,
+) {
     let mut planner = FFTplanner::new(inverse);
     let len = input.len();
     let fft = planner.plan_fft(len);
@@ -15,11 +18,11 @@ fn _fft<T: FFTnum>(input: &mut [Complex<T>], output: &mut [Complex<T>], inverse:
 }
 
 pub fn fft<T: FFTnum>(input: &mut [Complex<T>], output: &mut [Complex<T>]) {
-    _fft(input, output, false);
+    fast_fourier_transform_planner(input, output, false);
 }
 
 pub fn ifft<T: FFTnum + From<u32>>(input: &mut [Complex<T>], output: &mut [Complex<T>]) {
-    _fft(input, output, true);
+    fast_fourier_transform_planner(input, output, true);
     output.iter_mut().for_each(|v| {
         *v = v.unscale(T::from(input.len() as u32));
     });
