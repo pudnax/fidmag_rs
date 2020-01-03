@@ -1,17 +1,4 @@
-#![allow(dead_code, non_upper_case_globals)]
-fn main() {
-    // println!("{:?}", f([0., 0., 0.]));
-    // println!("{:?}", f([-0.1, -0.1, -0.1]));
-    // println!("{:?}", f([0.1, 0.1, 0.1]));
-    // println!("{:?}", f([-1., -1., -1.]));
-    // println!("{:?}", f([1., 1., 1.]));
-
-    println!("{:?}", g([0., 0., 0.]));
-    println!("{:?}", g([-0.1, -0.1, -0.1]));
-    println!("{:?}", g([0.1, 0.1, 0.1]));
-    println!("{:?}", g([-1., -1., -1.]));
-    println!("{:?}", g([1., 1., 1.]));
-}
+fn main() {}
 
 use std::f64::consts::PI;
 const n: (f64, f64, f64) = (100., 25., 1.);
@@ -55,7 +42,7 @@ mod test {
 
     #[test]
     fn test_f() {
-        let test_cases = vec![
+        let test_cases = &[
             ([0., 0., 0.], 0.),
             ([-0.1, -0.1, -0.1], -0.000_658_478_948_462_408_4),
             ([0.1, 0.1, 0.1], -0.000_658_478_948_462_408_4),
@@ -64,20 +51,20 @@ mod test {
         ];
 
         for (input, expected) in test_cases {
-            assert_float(f(input), expected);
+            assert_float(f(*input), *expected);
         }
     }
 
     #[test]
     fn test_g() {
-        let test_cases = vec![
+        let test_cases = &[
             ([0., 0., 0.], 0.),
             ([0.1, 0.1, 0.1], -0.000_876_148_756_681_075_6),
             ([1., 1., 1.], -0.090_750_593_283_627_22),
         ];
 
         for (input, expected) in test_cases {
-            assert_float(g(input), expected);
+            assert_float(g(*input), *expected);
         }
     }
 }
