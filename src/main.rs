@@ -20,7 +20,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-fn sest_n_demag<N, T>(demag: &mut Array<N, T>, c: usize, permute: usize, func: impl Fn()) {}
+fn set_n_demag<N, T>(demag: &mut Array<N, T>, c: usize, permute: usize, func: impl Fn()) {}
 
 fn f(p: [f64; 3]) -> f64 {
     let [x, y, z] = [p[0].abs(), p[1].abs(), p[2].abs()];
