@@ -9,31 +9,40 @@ const MS: f64 = 8e5;
 const A: f64 = 1.3e-11;
 const ALPHA: f64 = 0.02;
 
-// const EPS: f64 = std::f64::EPSILON;
-const EPS: f64 = 1e-18;
+const EPS: f64 = std::f64::EPSILON;
+// const EPS: f64 = 1e-18;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let buff = vec![0; DEMAG_DIM.iter().product()];
     let n_demag = Array::from(buff);
     let mut n_demag = n_demag.into_shape(DEMAG_DIM)?;
 
-    println!("{}", g([0., 0., 0.]));
-    println!("{}", g([-0.1, -0.1, -0.1]));
-    println!("{}", g([0.1, 0.1, 0.1]));
-    println!("{}", g([-1., -1., -1.]));
-    println!("{}", g([1., 1., 1.]));
-
-    println!("{}", f([0., 0., 0.]));
-    println!("{}", f([-0.1, -0.1, -0.1]));
-    println!("{}", f([0.1, 0.1, 0.1]));
-    println!("{}", f([-1., -1., -1.]));
-    println!("{}", f([1., 1., 1.]));
+    for (i, t) in [
+        (f as fn([_; 3]) -> _, [0usize, 1, 2]),
+        (g, [0, 1, 2]),
+        (g, [0, 2, 1]),
+        (f, [1, 2, 0]),
+        (g, [1, 2, 0]),
+        (f, [2, 0, 1]),
+    ]
+    .iter()
+    .enumerate()
+    {
+        set_n_demag(&mut n_demag, i, t.0, t.1);
+        println!("{}: {:?}", i, t);
+    }
 
     // println!("{:?}", n_demag);
     Ok(())
 }
 
-fn set_n_demag<N, T>(demag: &mut Array<N, T>, c: usize, permute: usize, func: impl Fn()) {}
+fn set_n_demag<N, T>(
+    demag: &mut Array<N, T>,
+    c: usize,
+    func: impl Fn([f64; 3]) -> f64,
+    permute: [usize; 3],
+) {
+}
 
 fn f(p: [f64; 3]) -> f64 {
     let [x, y, z] = [p[0].abs(), p[1].abs(), p[2].abs()];
