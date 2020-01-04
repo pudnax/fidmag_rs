@@ -401,6 +401,7 @@ name = "fidmag_rs"
 version = "0.1.0"
 dependencies = [
  "criterion 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "itertools 0.8.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "ndarray 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "plotters 0.2.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustfft 3.0.1 (registry+https://github.com/rust-lang/crates.io-index)",

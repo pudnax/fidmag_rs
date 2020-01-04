@@ -1,8 +1,11 @@
+#![feature(slice_patterns)]
 use ndarray::prelude::*;
+
+use itertools::Itertools;
 
 use std::f64::consts::PI;
 const N: [usize; 3] = [100, 25, 1];
-static DEMAG_DIM: [usize; 4] = { [2 * N[0] - 1, 2 * N[1] - 1, 2 * N[2] - 1, 6] };
+static DEMAG_DIM: [usize; 4] = [2 * N[0] - 1, 2 * N[1] - 1, 2 * N[2] - 1, 6];
 const MU0: f64 = 4e-7 * PI;
 const GAMMA: f64 = 2.211e5;
 const MS: f64 = 8e5;
@@ -12,11 +15,14 @@ const ALPHA: f64 = 0.02;
 const EPS: f64 = std::f64::EPSILON;
 // const EPS: f64 = 1e-18;
 
+use std::iter::FromIterator;
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut n_demag = Array::<f64, _>::zeros(DEMAG_DIM);
+    let mut n_demag = n_demag.view_mut();
 
     for (i, t) in [
-        (f as fn([_; 3]) -> _, [0usize, 1, 2]),
+        (f as fn(&[_]) -> _, [0usize, 1, 2]),
         (g, [0, 1, 2]),
         (g, [0, 2, 1]),
         (f, [1, 2, 0]),
@@ -27,24 +33,30 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     .enumerate()
     {
         set_n_demag(&mut n_demag, i, t.0, t.1);
-        println!("{}: {:?}", i, t);
+        // println!("{}: {:?}", i, t.1);
     }
 
-    println!("{:?}", n_demag.slice(s![1, .., .., ..2]));
-    println!("{:?}", n_demag[[1, 4, 0, 0]]);
+    for i in BinarySeq::new(6) {
+        println!("{:?}", i);
+    }
+
     Ok(())
 }
 
 fn set_n_demag<N, T>(
-    demag: &mut Array<N, T>,
+    demag: &mut ArrayViewMut<N, T>,
     c: usize,
-    func: impl Fn([f64; 3]) -> f64,
+    func: impl Fn(&[f64]) -> f64,
     permute: [usize; 3],
 ) {
 }
 
-fn f(p: [f64; 3]) -> f64 {
-    let [x, y, z] = [p[0].abs(), p[1].abs(), p[2].abs()];
+fn f(p: &[f64]) -> f64 {
+    // let [x, y, z] = [p[0].abs(), p[1].abs(), p[2].abs()];
+    let (x, y, z) = match p {
+        [x, y, z, ..] => (x.abs(), y.abs(), z.abs()),
+        _ => panic!(),
+    };
 
     y / 2.0 * (z * z - x * x) * (y / ((x * x + z * z).sqrt() + EPS)).asinh()
         + z / 2.0 * (y * y - x * x) * (z / ((x * x + y * y).sqrt() + EPS)).asinh()
@@ -52,9 +64,12 @@ fn f(p: [f64; 3]) -> f64 {
         + 1.0 / 6.0 * (2. * x * x - y * y - z * z) * (x * x + y * y + z * z).sqrt()
 }
 
-fn g(p: [f64; 3]) -> f64 {
-    let [x, y, z] = p;
-    let z = z.abs();
+fn g(p: &[f64]) -> f64 {
+    // let [x, y, z] = [p[0], p[1], p[2].abs()];
+    let (x, y, z) = match p {
+        [x, y, z, ..] => (x, y, z.abs()),
+        _ => panic!(),
+    };
 
     x * y * z * (z / ((x * x + y * y).sqrt() + EPS)).asinh()
         + y / 6.0 * (3.0 * z * z - y * y) * (x / ((y * y + z * z).sqrt() + EPS)).asinh()
@@ -84,7 +99,7 @@ mod test {
         ];
 
         for (input, expected) in test_cases {
-            assert_float(f(*input), *expected);
+            assert_float(f(input), *expected);
         }
     }
 
@@ -99,7 +114,42 @@ mod test {
         ];
 
         for (input, expected) in test_cases {
-            assert_float(g(*input), *expected);
+            assert_float(g(input), *expected);
         }
+    }
+}
+
+struct BinarySeq {
+    num: usize,
+    counter: usize,
+    pattern: Vec<usize>,
+}
+
+impl BinarySeq {
+    fn new(num: usize) -> BinarySeq {
+        BinarySeq {
+            num: num - 1,
+            counter: 0,
+            pattern: vec![0; num],
+        }
+    }
+}
+
+impl Iterator for BinarySeq {
+    type Item = Vec<usize>;
+    fn next(&mut self) -> Option<Self::Item> {
+        let res = if self.counter < (1 << (self.num + 1)) {
+            Some(
+                self.pattern
+                    .iter()
+                    .enumerate()
+                    .map(|(i, _)| self.counter / (1 << self.num - i) % 2)
+                    .collect(),
+            )
+        } else {
+            None
+        };
+        self.counter += 1;
+        res
     }
 }
