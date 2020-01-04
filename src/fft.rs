@@ -1,6 +1,3 @@
-extern crate ndarray;
-extern crate rustfft;
-
 use ndarray::{ArrayViewMut, ArrayViewMut2, Dimension};
 use rustfft::num_complex::Complex;
 use rustfft::num_traits::Zero;
@@ -99,9 +96,8 @@ fn _fftnd<D: Dimension>(
     inverse: bool,
 ) {
     let len = axes.len();
-    for i in 0..len {
-        let axis = axes[i];
-        _fftn(input, output, axis, inverse);
+    for (i, axis) in axes.iter().enumerate() {
+        _fftn(input, output, *axis, inverse);
         if i < len - 1 {
             let mut outrows = output.genrows_mut().into_iter();
             for mut row in input.genrows_mut() {
