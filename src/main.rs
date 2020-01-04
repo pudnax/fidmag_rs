@@ -13,9 +13,7 @@ const EPS: f64 = std::f64::EPSILON;
 // const EPS: f64 = 1e-18;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let buff = vec![0; DEMAG_DIM.iter().product()];
-    let n_demag = Array::from(buff);
-    let mut n_demag = n_demag.into_shape(DEMAG_DIM)?;
+    let mut n_demag = Array::<f64, _>::zeros(DEMAG_DIM);
 
     for (i, t) in [
         (f as fn([_; 3]) -> _, [0usize, 1, 2]),
@@ -32,7 +30,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("{}: {:?}", i, t);
     }
 
-    // println!("{:?}", n_demag);
+    println!("{:?}", n_demag.slice(s![1, .., .., ..2]));
+    println!("{:?}", n_demag[[1, 4, 0, 0]]);
     Ok(())
 }
 
