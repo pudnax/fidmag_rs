@@ -9,14 +9,27 @@ const MS: f64 = 8e5;
 const A: f64 = 1.3e-11;
 const ALPHA: f64 = 0.02;
 
-const EPS: f64 = std::f64::EPSILON;
+// const EPS: f64 = std::f64::EPSILON;
+const EPS: f64 = 1e-18;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let buff = vec![0; DEMAG_DIM.iter().product()];
     let n_demag = Array::from(buff);
     let mut n_demag = n_demag.into_shape(DEMAG_DIM)?;
 
-    println!("{:?}", n_demag);
+    println!("{}", g([0., 0., 0.]));
+    println!("{}", g([-0.1, -0.1, -0.1]));
+    println!("{}", g([0.1, 0.1, 0.1]));
+    println!("{}", g([-1., -1., -1.]));
+    println!("{}", g([1., 1., 1.]));
+
+    println!("{}", f([0., 0., 0.]));
+    println!("{}", f([-0.1, -0.1, -0.1]));
+    println!("{}", f([0.1, 0.1, 0.1]));
+    println!("{}", f([-1., -1., -1.]));
+    println!("{}", f([1., 1., 1.]));
+
+    // println!("{:?}", n_demag);
     Ok(())
 }
 
@@ -35,10 +48,10 @@ fn g(p: [f64; 3]) -> f64 {
     let [x, y, z] = p;
     let z = z.abs();
 
-    x * y * z * (z / ((x * z + y * y).sqrt() + EPS)).asinh()
+    x * y * z * (z / ((x * x + y * y).sqrt() + EPS)).asinh()
         + y / 6.0 * (3.0 * z * z - y * y) * (x / ((y * y + z * z).sqrt() + EPS)).asinh()
-        + x / 6.0 * (3.0 * z * z - x * z) * (y / ((x * z + z * z).sqrt() + EPS)).asinh()
-        - z * z / 6.0 * (x * y / (z * (x * z + y * y + z * z).sqrt() + EPS)).atan()
+        + x / 6.0 * (3.0 * z * z - x * x) * (y / ((x * x + z * z).sqrt() + EPS)).asinh()
+        - z * z * z / 6.0 * (x * y / (z * (x * x + y * y + z * z).sqrt() + EPS)).atan()
         - z * y * y / 2.0 * (x * z / (y * (x * x + y * y + z * z).sqrt() + EPS)).atan()
         - z * x * x / 2.0 * (y * z / (x * (x * x + y * y + z * z).sqrt() + EPS)).atan()
         - x * y * (x * x + y * y + z * z).sqrt() / 3.0
@@ -71,7 +84,9 @@ mod test {
     fn test_g() {
         let test_cases = &[
             ([0., 0., 0.], 0.),
-            ([0.1, 0.1, 0.1], -0.000_876_148_756_681_075_6),
+            ([-0.1, -0.1, -0.1], -0.000_090_750_593_283_627_15),
+            ([0.1, 0.1, 0.1], -0.000_090_750_593_283_627_15),
+            ([-1., -1., -1.], -0.090_750_593_283_627_22),
             ([1., 1., 1.], -0.090_750_593_283_627_22),
         ];
 
