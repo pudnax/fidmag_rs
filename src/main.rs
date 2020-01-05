@@ -36,10 +36,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         // println!("{}: {:?}", i, t.1);
     }
 
-    for i in BinarySeq::new(6) {
-        println!("{:?}", i);
-    }
-
     Ok(())
 }
 
@@ -122,7 +118,6 @@ mod test {
 struct BinarySeq {
     num: usize,
     counter: usize,
-    pattern: Vec<usize>,
 }
 
 impl BinarySeq {
@@ -130,7 +125,6 @@ impl BinarySeq {
         BinarySeq {
             num: num - 1,
             counter: 0,
-            pattern: vec![0; num],
         }
     }
 }
@@ -140,13 +134,13 @@ impl Iterator for BinarySeq {
     fn next(&mut self) -> Option<Self::Item> {
         let res = if self.counter < (1 << (self.num + 1)) {
             Some(
-                self.pattern
-                    .iter()
+                (0..self.num)
                     .enumerate()
                     .map(|(i, _)| self.counter / (1 << self.num - i) % 2)
                     .collect(),
             )
         } else {
+            self.counter = 0;
             None
         };
         self.counter += 1;
