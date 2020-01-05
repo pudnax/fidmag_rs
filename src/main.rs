@@ -1,4 +1,4 @@
-#![feature(slice_patterns)]
+// #![feature(slice_patterns)]
 use ndarray::prelude::*;
 
 use itertools::Itertools;
@@ -48,11 +48,11 @@ fn set_n_demag<N, T>(
 }
 
 fn f(p: &[f64]) -> f64 {
-    // let [x, y, z] = [p[0].abs(), p[1].abs(), p[2].abs()];
-    let (x, y, z) = match p {
-        [x, y, z, ..] => (x.abs(), y.abs(), z.abs()),
-        _ => panic!(),
-    };
+    let [x, y, z] = [p[0].abs(), p[1].abs(), p[2].abs()];
+    // let (x, y, z) = match p {
+    //     [x, y, z, ..] => (x.abs(), y.abs(), z.abs()),
+    //     _ => panic!(),
+    // };
 
     y / 2.0 * (z * z - x * x) * (y / ((x * x + z * z).sqrt() + EPS)).asinh()
         + z / 2.0 * (y * y - x * x) * (z / ((x * x + y * y).sqrt() + EPS)).asinh()
@@ -61,11 +61,11 @@ fn f(p: &[f64]) -> f64 {
 }
 
 fn g(p: &[f64]) -> f64 {
-    // let [x, y, z] = [p[0], p[1], p[2].abs()];
-    let (x, y, z) = match p {
-        [x, y, z, ..] => (x, y, z.abs()),
-        _ => panic!(),
-    };
+    let [x, y, z] = [p[0], p[1], p[2].abs()];
+    // let (x, y, z) = match p {
+    //     [x, y, z, ..] => (x, y, z.abs()),
+    //     _ => panic!(),
+    // };
 
     x * y * z * (z / ((x * x + y * y).sqrt() + EPS)).asinh()
         + y / 6.0 * (3.0 * z * z - y * y) * (x / ((y * y + z * z).sqrt() + EPS)).asinh()
