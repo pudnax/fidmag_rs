@@ -5,6 +5,7 @@ use itertools::Itertools;
 
 use std::f64::consts::PI;
 const N: [usize; 3] = [100, 25, 1];
+const DX: [f64; 3] = [5e-9, 5e-9, 3e-9];
 static DEMAG_DIM: [usize; 4] = [2 * N[0] - 1, 2 * N[1] - 1, 2 * N[2] - 1, 6];
 const MU0: f64 = 4e-7 * PI;
 const GAMMA: f64 = 2.211e5;
@@ -18,7 +19,8 @@ const EPS: f64 = std::f64::EPSILON;
 use std::iter::FromIterator;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut n_demag = Array::<f64, _>::zeros(DEMAG_DIM);
+    let prod = DEMAG_DIM.iter().fold(1, |acc, &v| acc * v);
+    let mut n_demag = Array::<f64, _>::linspace(0., prod as f64, prod).into_shape(DEMAG_DIM)?;
     let mut n_demag = n_demag.view_mut();
 
     for (i, t) in [
@@ -33,18 +35,35 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     .enumerate()
     {
         set_n_demag(&mut n_demag, i, t.0, t.1);
-        // println!("{}: {:?}", i, t.1);
     }
 
     Ok(())
 }
 
-fn set_n_demag<N, T>(
-    demag: &mut ArrayViewMut<N, T>,
+fn set_n_demag(
+    demag: &mut ArrayViewMut<f64, Ix4>,
     c: usize,
     func: impl Fn(&[f64]) -> f64,
     permute: [usize; 3],
 ) {
+    for (idx, elem) in demag.slice_mut(s![.., .., .., c]).indexed_iter_mut() {
+        let idx = [idx.0, idx.1, idx.2];
+        let mut value = 0.;
+        for i in BinarySeq::new(6) {
+            let idx: Vec<_> = (0..3)
+                .map(|k| (idx[k] as usize + N[k] - 1) % (2 * N[k] + 1))
+                .collect();
+            value += (-1f64).powi(i.iter().fold(0, |acc, &i| acc + i as i32))
+                * func(
+                    permute
+                        .iter()
+                        .map(|&j| (idx[j] + i[j] - i[j + 3]) as f64 * DX[j])
+                        .collect::<Vec<_>>()
+                        .as_slice(),
+                );
+        }
+        *elem = -value / (4. * PI * DX.iter().fold(1., |acc, v| acc * v));
+    }
 }
 
 fn f(p: &[f64]) -> f64 {
@@ -123,7 +142,7 @@ struct BinarySeq {
 impl BinarySeq {
     fn new(num: usize) -> BinarySeq {
         BinarySeq {
-            num: num - 1,
+            num: num,
             counter: 0,
         }
     }
