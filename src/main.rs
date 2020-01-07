@@ -1,5 +1,6 @@
 // #![feature(slice_patterns)]
 use ndarray::prelude::*;
+use ndarray::Data;
 
 use itertools::Itertools;
 
@@ -15,6 +16,8 @@ const ALPHA: f64 = 0.02;
 
 const EPS: f64 = std::f64::EPSILON;
 // const EPS: f64 = 1e-18;
+
+use fidmag_rs::*;
 
 use std::iter::FromIterator;
 
@@ -65,6 +68,8 @@ fn set_n_demag(
         *elem = -value / (4. * PI * DX.iter().fold(1., |acc, v| acc * v));
     }
 }
+
+fn h_eff<D: ndarray::Dimension>(m: &mut ArrayViewMut<f64, D>) {}
 
 fn f(p: &[f64]) -> f64 {
     let [x, y, z] = [p[0].abs(), p[1].abs(), p[2].abs()];
