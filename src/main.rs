@@ -1,8 +1,5 @@
 // #![feature(slice_patterns)]
 use ndarray::prelude::*;
-use ndarray::Data;
-
-use itertools::Itertools;
 
 mod utils;
 use utils::BinarySeq;
@@ -11,18 +8,16 @@ use std::f64::consts::PI;
 const N: [usize; 3] = [100, 25, 1];
 const DX: [f64; 3] = [5e-9, 5e-9, 3e-9];
 static DEMAG_DIM: [usize; 4] = [2 * N[0] - 1, 2 * N[1] - 1, 2 * N[2] - 1, 6];
-const MU0: f64 = 4e-7 * PI;
-const GAMMA: f64 = 2.211e5;
-const MS: f64 = 8e5;
-const A: f64 = 1.3e-11;
-const ALPHA: f64 = 0.02;
+const _MU0: f64 = 4e-7 * PI;
+const _GAMMA: f64 = 2.211e5;
+const _MS: f64 = 8e5;
+const _A: f64 = 1.3e-11;
+const _ALPHA: f64 = 0.02;
 
 const EPS: f64 = std::f64::EPSILON;
 // const EPS: f64 = 1e-18;
 
-use fidmag_rs::*;
-
-use std::iter::FromIterator;
+// use std::iter::FromIterator;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let prod = DEMAG_DIM.iter().fold(1, |acc, &v| acc * v);
@@ -72,7 +67,7 @@ fn set_n_demag(
     }
 }
 
-fn h_eff<D: ndarray::Dimension>(m: &mut ArrayViewMut<f64, D>) {}
+fn _h_eff<D: ndarray::Dimension>(_m: &mut ArrayViewMut<f64, D>) {}
 
 fn f(p: &[f64]) -> f64 {
     let [x, y, z] = [p[0].abs(), p[1].abs(), p[2].abs()];
