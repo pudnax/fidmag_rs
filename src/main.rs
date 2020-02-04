@@ -4,6 +4,9 @@ use ndarray::Data;
 
 use itertools::Itertools;
 
+mod utils;
+use utils::BinarySeq;
+
 use std::f64::consts::PI;
 const N: [usize; 3] = [100, 25, 1];
 const DX: [f64; 3] = [5e-9, 5e-9, 3e-9];
@@ -60,7 +63,7 @@ fn set_n_demag(
                 * func(
                     permute
                         .iter()
-                        .map(|&j| (idx[j] + i[j] - i[j + 3]) as f64 * DX[j])
+                        .map(|&j| (idx[j] as f64 + i[j] as f64 - i[j + 3] as f64) * DX[j])
                         .collect::<Vec<_>>()
                         .as_slice(),
                 );
@@ -136,38 +139,5 @@ mod test {
         for (input, expected) in test_cases {
             assert_float(g(input), *expected);
         }
-    }
-}
-
-struct BinarySeq {
-    num: usize,
-    counter: usize,
-}
-
-impl BinarySeq {
-    fn new(num: usize) -> BinarySeq {
-        BinarySeq {
-            num: num,
-            counter: 0,
-        }
-    }
-}
-
-impl Iterator for BinarySeq {
-    type Item = Vec<usize>;
-    fn next(&mut self) -> Option<Self::Item> {
-        let res = if self.counter < (1 << (self.num + 1)) {
-            Some(
-                (0..self.num)
-                    .enumerate()
-                    .map(|(i, _)| self.counter / (1 << self.num - i) % 2)
-                    .collect(),
-            )
-        } else {
-            self.counter = 0;
-            None
-        };
-        self.counter += 1;
-        res
     }
 }
