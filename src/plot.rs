@@ -1,7 +1,7 @@
 use plotters::coord::Shift;
 use plotters::prelude::*;
 
-fn draw_chart<B: DrawingBackend>(
+fn _draw_chart<B: DrawingBackend>(
     root: &DrawingArea<B, Shift>,
     arr: Vec<(f64, f64)>,
 ) -> DrawResult<(), B> {
