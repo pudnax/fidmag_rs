@@ -5,3 +5,4 @@ examples
 *.png
 fi.py
 callgrind*
+sp4.dat
